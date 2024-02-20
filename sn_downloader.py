@@ -1,7 +1,7 @@
 import requests
 import json
-from blMethods.getOrders import getOrders
-from blMethods.getInvoices import getInvoices
+from blMethods.getOrders import get_orders
+from blMethods.getInvoices import get_invoices
 
-getOrders()
-# getInvoices()
+get_orders()
+# get_invoices()
