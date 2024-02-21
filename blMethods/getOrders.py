@@ -36,9 +36,9 @@ def get_orders():
                 bl_user_fullname = show["orders"][i]["delivery_fullname"]
                 bl_sku = show["orders"][i]["products"][j]["sku"]
 
-                print(
-                    f"Tylko uzupełniony komentarz \t {bl_order_id} \t {bl_admin_comment}"
-                )
+                # print(
+                #     f"Tylko uzupełniony komentarz \t {bl_order_id} \t {bl_admin_comment}"
+                # )
                 orders_list.append(
                     [
                         bl_order_id,
@@ -84,5 +84,5 @@ def get_orders():
 
     list_orders_df = pd.DataFrame(orders_list)
 
-    print(list_orders_df)
-    # get_invoices(list_orders_df)
+    # print(list_orders_df)
+    get_invoices(orders_list)
