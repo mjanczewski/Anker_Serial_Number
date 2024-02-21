@@ -1,16 +1,20 @@
 import requests
 import json
 import os
+import pandas as pd
 from config.connectionConfig import BaselinkerToken
 from otherMethods.getLastOrderID import get_last_order_id
+from blMethods.getInvoices import get_invoices
 
 
 def get_orders():
+    list_orders_df = pd.DataFrame()
     TOKEN = BaselinkerToken()
     file_name = "last_order_id.txt"
     status_id = 68690
     getOrders = "getOrders"
     id_from = get_last_order_id()
+    orders_list = []
 
     parameters = json.dumps({"id_from": id_from, "status_id": status_id})
     data = {"token": TOKEN, "method": getOrders, "parameters": parameters}
@@ -24,35 +28,61 @@ def get_orders():
         number_of_products = len(show["orders"][i]["products"])
         last_order_id = show["orders"][i]["order_id"]
 
-        if number_of_products == 1:
-            print(
-                show["orders"][i]["order_id"],
-                show["orders"][i]["admin_comments"],
-                show["orders"][i]["user_login"],
-                show["orders"][i]["delivery_fullname"],
-                show["orders"][i]["products"][0]["sku"],
-            )
-        else:
-            for j in range(number_of_products):
+        for j in range(number_of_products):
+            if show["orders"][i]["admin_comments"] != "":
+                bl_order_id = show["orders"][i]["order_id"]
+                bl_admin_comment = show["orders"][i]["admin_comments"]
+                bl_user_login = show["orders"][i]["user_login"]
+                bl_user_fullname = show["orders"][i]["delivery_fullname"]
+                bl_sku = show["orders"][i]["products"][j]["sku"]
+
                 print(
-                    show["orders"][i]["order_id"],
-                    show["orders"][i]["admin_comments"],
-                    show["orders"][i]["user_login"],
-                    show["orders"][i]["delivery_fullname"],
-                    show["orders"][i]["products"][j]["sku"],
-                    "=========================================",
+                    f"Tylko uzupełniony komentarz \t {bl_order_id} \t {bl_admin_comment}"
                 )
+                orders_list.append(
+                    [
+                        bl_order_id,
+                        bl_admin_comment,
+                        bl_user_login,
+                        bl_user_fullname,
+                        bl_sku,
+                    ]
+                )
+            else:
+                continue
+
+            # print(
+            #     show["orders"][i]["order_id"],
+            #     show["orders"][i]["admin_comments"],
+            #     show["orders"][i]["user_login"],
+            #     show["orders"][i]["delivery_fullname"],
+            #     show["orders"][i]["products"][j]["sku"],
+            # )
+
+        # if number_of_products == 1:
+        #     print(
+        #         show["orders"][i]["order_id"],
+        #         show["orders"][i]["admin_comments"],
+        #         show["orders"][i]["user_login"],
+        #         show["orders"][i]["delivery_fullname"],
+        #         show["orders"][i]["products"][0]["sku"],
+        #     )
+        # else:
+        #     for j in range(number_of_products):
+        #         print(
+        #             show["orders"][i]["order_id"],
+        #             show["orders"][i]["admin_comments"],
+        #             show["orders"][i]["user_login"],
+        #             show["orders"][i]["delivery_fullname"],
+        #             show["orders"][i]["products"][j]["sku"],
+        #             "=========================================",
+        #         )
 
     with open(file_name, "w") as file:
         file.write(str(last_order_id + 1))
     file.close()
 
-    id_from = last_order_id + 1
-    print(id_from)
+    list_orders_df = pd.DataFrame(orders_list)
 
-    # print(show["orders"][0]["order_id"], show["orders"][0]["admin_comments"])
-    # print(len(show["orders"]))
-    # print(show["orders"][0])
-
-    # json_format = json.dumps(show, indent=2)
-    # print(json_format)
+    print(list_orders_df)
+    # get_invoices(list_orders_df)
