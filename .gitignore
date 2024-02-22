@@ -1,3 +1,4 @@
 snd
 config/connectionconfig.py
-last_order_id.txt
+*.txt
+*.csv
