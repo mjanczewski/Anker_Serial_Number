@@ -2,3 +2,5 @@ snd
 config/connectionconfig.py
 *.txt
 *.csv
+buil
+dist
